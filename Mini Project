@@ -1,0 +1,314 @@
+package Test.Sample;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Scanner;
+
+public class Userdetails    
+{
+		static int num1 = 1;
+	static int num2 = 2,num3 = 3, num4=4, num5 = 5;
+	static int userId = 0;
+	static int movieId = 0;
+
+static void registeruser() throws SQLException
+     {
+    	 String username, password, mobileno;
+    	 Scanner s = new Scanner(System.in);
+    	 
+System.out.print("Enter username: ");
+    	  username = s.nextLine();
+    	 
+    System.out.print("Enter password: ");
+ 	password = s.nextLine();
+    	 
+  System.out.print("Enter mobileno: ");
+   mobileno = s.nextLine();
+    	 try
+    	    {
+    	       String myUrl = "jdbc:mysql://localhost/mini";
+    	            Connection connection = DriverManager.getConnection(myUrl, "root", "Revathi@2022");
+    	      
+    	            String query = " insert into userdetails ( user_name, user_password, mobile_no)"
+    	                    + " values (?, ?, ?)";
+
+    	      PreparedStatement preparedStmt = connection.prepareStatement(query);
+    	      //preparedStmt.setInt (1, 2);
+    	      preparedStmt.setString (1, username);
+    	      preparedStmt.setString (2, password);
+    	      preparedStmt.setString (3, mobileno);
+    	     preparedStmt.execute();
+    	     connection.close();
+    	     System.out.println("updated Succesfully");
+    	     
+    	    }
+    	 catch (Exception e)
+    	    { 
+    		 System.err.println(e);
+     }
+    	     }
+     static void loginuser() throws SQLException
+     {
+    	 Scanner s = new Scanner(System.in);
+    	 
+    	 Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mini", "root", "Revathi@2022"); 
+   	  
+   	   		Statement stmt = connection.createStatement();  
+     	  Scanner sc = new Scanner(System.in);  
+     	  System.out.print("Enter the user name : ");  
+     	  String str1 = sc.next();  
+     	  System.out.print("Enter the password : ");  
+     	  String str2 = sc.next();  
+     	  
+     	  ResultSet rs = stmt.executeQuery("select * from userdetails where user_name='" + str1 + "' and user_password='" + str2 + "'");  
+     	  if (rs.next())  {
+     		 userId = rs.getInt("user_id");
+     	   System.out.println("Uservalid"); 
+     	  showmainmenu();
+     	  }
+     	  else  {
+     	   System.out.println("Invalid user name and password");  
+     	   showmenu();
+     	  }
+     	 connection.close(); 
+    	 
+  
+ }
+     static void showmenu() throws SQLException
+       {
+		 System.out.println("Menu:");
+    	 System.out.println("Existing user press\n" +num1);  
+    	 System.out.println("New user press\n" +num2);  
+    	 System.out.println("Exit \n" +num3); 
+    	 System.out.print("Press the number: ");
+         int number;
+         Scanner in = new Scanner(System.in);
+         number = in.nextInt();
+         switch (number) 
+         {
+         case 1:
+               System.out.println("Existing User");
+              loginuser();
+               break;
+         case 2:
+        	 System.out.println("New User");
+        	 registeruser();
+        	 loginuser();
+               break;
+         case 3:
+               break;
+         default:
+             System.out.println("Choose Option Again");
+             showmenu();
+             
+             break;
+       }
+    }
+		static void showmainmenu() throws SQLException
+	       {
+			
+			System.out.println("Main Menu:");
+	    	System.out.println("View Movie List\n" +num1);
+	    	System.out.println("Book Tickets\n" +num2);
+	        System.out.println("Cancel Ticket\n" +num3);
+	    	System.out.println("View Ticket\n" +num4);
+	    	System.out.println("Logout\n" +num5);
+	    	System.out.println("Please choose any option: ");	       
+	    	 
+	    	 int number;
+	         Scanner in = new Scanner(System.in);
+	         number = in.nextInt();
+	         switch (number) 
+	         {
+	         case 1:
+	        	 viewmovielist(false);
+	              
+	               break;
+	         case 2:
+	        	 viewmovielist(true);
+	        	 
+	               break;
+	         case 3:
+	        	 viewTicket(true);
+	              
+	               break;
+	         case 4:
+	        	 viewTicket(false);
+	        	 
+	               break;
+	         case 5:
+	              
+	              showmenu();
+	               break;
+	         
+
+	         default:
+	             System.out.println("Choose Option Again");
+	             showmainmenu();
+	             
+	             break;
+	       }
+	    }
+		static void viewmovielist(boolean isFromBookTicket) throws SQLException
+	    {int count = 0;
+		     try {
+	   	 HashMap hm = new HashMap<>();
+	   	 Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mini", "root", "Revathi@2022"); 
+	  	  	Statement stmt = connection.createStatement();  
+	    	 	  ResultSet rs = stmt.executeQuery("select * from moviedetails where Is_currentlyshow = 1");
+	    	 	  
+	    	 	  while(rs.next())
+	    	{
+	    	 		  count++;
+	    		hm.put(rs.getInt("movie_id"),rs.getInt("movie_id")+"."+rs.getString("movie_name"));
+	    	}
+	    	System.out.println(hm.values());
+	    	
+	    	if(isFromBookTicket)
+	    	{
+	    		System.out.println("Choose one option to boockticket:" );
+	    	
+	    	}
+		
+	    	
+	    	else
+	    	{
+	      	  System.out.println("Go to mainmenu press "+ ++count +" or more than "+count +"\n"); 
+	      	  System.out.print("Press the number: ");
+	      	
+	    	}
+	    	int number;
+	        Scanner in = new Scanner(System.in);
+	        number = in.nextInt();
+	        if(number>=count) {
+	        	showmainmenu();
+	        }else if(isFromBookTicket) {
+	        	bookTickets(number);
+	        }else {
+	        	viewmovielist(isFromBookTicket);
+	        }
+	   	}
+	   	   	 catch (Exception e)
+	   	 {
+	   		 e.printStackTrace();
+	   	  }
+			
+	    }	
+	static void bookTickets(int number) throws SQLException
+			{
+		movieId = number;
+		int count = 0;
+		try {
+			Connection	 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mini", "root", "Revathi@2022");//Establishing connection
+			Statement stmt = connection.createStatement();  
+  	 	  ResultSet rs = stmt.executeQuery("select * from moviedetails where movie_id = ' "+ number+"'");
+  	 	while(rs.next())
+    	{
+  	 		if(count==0) {
+  	 		System.out.println("Movie Name : "+ rs.getString("movie_name"));
+  	 		System.out.println("Available seats : "+ rs.getString("available_seats"));
+  	 		System.out.println("Enter how many no of seats required");
+  	 		count++;
+  	 		}
+    	}
+        Scanner in = new Scanner(System.in);
+        int seatsCount = in.nextInt();
+        String sqlstmt = "Insert into movieticketdetails(user_id,movie_id,noof_tickets,is_cancelled) values('"+userId+"','"+movieId+"','"+seatsCount+"','1')";
+       // System.out.print(sqlstmt);
+        stmt.executeUpdate(sqlstmt);
+        System.out.println("Tickets booked successfully");
+        showmainmenu();
+		} catch (SQLException e) {
+			
+			System.out.println(e);
+		
+				}
+				
+			}
+static void cancelTicket(int number) {
+	try {
+		Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mini", "root", "Revathi@2022"); 
+	  	Statement stmt = connection.createStatement();  
+ 	 	stmt.executeUpdate("update movieticketdetails set is_cancelled =0 where ticket_id='"+number+"'");
+ 	 	System.out.println("Tickets deleted successfully");
+ 	 	showmainmenu();
+	}catch(Exception e) {
+		System.out.println(e);
+	}
+}
+static void viewTicket(boolean isFromCancelTicket) {
+	try {
+		int count =0;
+		HashMap hm = new HashMap<>();
+		HashMap hm1 = new HashMap<>();
+	 Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mini", "root", "Revathi@2022"); 
+	  	Statement stmt = connection.createStatement();  
+ 	 	  ResultSet rs = stmt.executeQuery("select * from movieticketdetails where is_cancelled = 1 and user_id = '"+userId+"'");
+ 	 	Statement stmt1 = connection.createStatement();
+ 	 	  ResultSet res = stmt1.executeQuery("select * from moviedetails where Is_currentlyshow = 1");
+ 
+ 	 	 while(res.next())
+  	 	{
+  	 		hm1.put(res.getInt("movie_id"),res.getString("movie_name"));
+  	 	}
+
+ 	 	  while(rs.next())
+ 	 	  {
+ 	 		  count=rs.getInt("ticket_id");
+ 	 		  System.out.println(rs.getInt("ticket_id") +" . "+hm1.get(rs.getInt("movie_id"))+":"+ rs.getInt("noof_tickets")+ " tickets");
+ 		hm.put(rs.getInt("movie_id"),rs.getInt("noof_tickets"));
+ 	 	  }
+ 	 	  count++;
+ 	 	if(isFromCancelTicket)
+    	{
+    		System.out.println("Choose one option to cancel ticket:" );
+    	
+    	}
+	
+    	
+    	else
+    	{
+      	  System.out.println("Go to mainmenu press "+ ++count +" or more than "+count +"\n"); 
+      	  System.out.print("Press the number: ");
+    	}
+ 	 	int number;
+        Scanner in = new Scanner(System.in);
+        number = in.nextInt();
+        if(number>=count) {
+        	showmainmenu();
+        }else if(isFromCancelTicket){
+        	cancelTicket(number);
+        }else {
+        	viewTicket(isFromCancelTicket);
+        }
+	
+	}catch(Exception e) {
+		System.out.println(e);
+	}
+}
+
+        public static void main(String args[]) throws SQLException
+        {
+        	Scanner in = new Scanner(System.in);
+        	try {
+     			Connection	 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mini", "root", "Revathi@2022");//Establishing connection
+     			System.out.println("Connected With the database successfully");
+     			
+     		} catch (SQLException e) {
+     			
+     			System.out.println("Error while connecting to the database");
+     		
+     				}
+            showmenu();
+            System.out.println("Exited Successfully");
+     	
+       }
+
+        }
+    
+
